@@ -7,6 +7,7 @@ use ReversePolish\Stack\Operator as OperatorStack;
 use ReversePolish\TokenReader;
 use ReversePolish\NodeValidator;
 use ReversePolish\ParserUtil;
+use ReversePolish\Evaluator;
 
 class Parser extends TokenList
 {
@@ -36,6 +37,11 @@ class Parser extends TokenList
     private $validator;
 
     /**
+     * @var Evaluator
+     */
+    private $evaluator;
+
+    /**
      * @var ParserUtil
      */
     private $util;
@@ -45,14 +51,15 @@ class Parser extends TokenList
         OperatorStack $operatorStack,
         TokenReader $reader,
         NodeValidator $validator,
-        ParserUtil $util
+        ParserUtil $util,
+        Evaluator $evaluator
     ) {
-    
         $this->operandStack = $operandStack;
         $this->operatorStack = $operatorStack;
         $this->reader = $reader;
         $this->validator = $validator;
         $this->util = $util;
+        $this->evaluator = $evaluator;
     }
 
     public function parse($expr)
@@ -115,5 +122,10 @@ class Parser extends TokenList
         return join(' ', array_map(function ($q) {
             return $q->getNode();
         }, $this->parsed));
+    }
+
+    public function evaluate()
+    {
+        return $this->evaluator->evaluate($this->compile());
     }
 }
